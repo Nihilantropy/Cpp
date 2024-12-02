@@ -35,17 +35,7 @@ void	Span::addNumber( int num )
 	_numbers.push_back(num);
 }
 
-/* Template method to add a range of numbers using iterators */
-template <typename InputIterator>
-void	Span::addNumber(InputIterator begin, InputIterator end)
-{
-	if (_numbers.size() + std::distance(begin, end) > _maxSize) {
-		throw std::overflow_error("Adding these numbers will exceed the maximum size");
-	}
-	_numbers.insert(_numbers.end(), begin, end);
-}
-
-// Method to calculate the shortest span
+/* Method to calculate the shortest span */
 int		Span::shortestSpan() const
 {
 	if (_numbers.size() < 2) {
@@ -56,12 +46,8 @@ int		Span::shortestSpan() const
 	std::sort(sorted.begin(), sorted.end());
 
 	int minSpan = sorted[1] - sorted[0];
-	for (size_t i = 1; i < sorted.size() - 1; ++i)
-	{
-		int span = sorted[i + 1] - sorted[i];
-		if (span < minSpan) {
-			minSpan = span;
-		}
+	for (size_t i = 1; i < sorted.size(); i++) {
+		minSpan = std::min(minSpan, sorted[i] - sorted[i - 1]);
 	}
 	return minSpan;
 }

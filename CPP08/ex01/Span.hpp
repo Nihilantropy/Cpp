@@ -24,8 +24,14 @@ public:
 	void	addNumber( int num );
 
 	/* Template method to add a range of numbers using iterators */
-	template <typename InputIterator>
-    void	addNumber(InputIterator begin, InputIterator end);
+	template <typename T>
+    void	addNumber(T begin, T end)
+	{
+		if (_numbers.size() + std::distance(begin, end) > _maxSize) {
+			throw std::overflow_error("Adding these numbers will exceed the maximum size");
+		}
+		_numbers.insert(_numbers.end(), begin, end);
+	}
 
 	/* Method to calculate the shortest span */
 	int		shortestSpan() const;

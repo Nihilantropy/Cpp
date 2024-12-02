@@ -17,11 +17,8 @@ int main()
         std::vector<int>::iterator vec_it = easyfind(vec, 20);
         std::cout << "Found: " << *vec_it << std::endl;
 
-        // Test with element that does not exist
-        vec_it = easyfind(vec, 50);
-        std::cout << "Found: " << *vec_it << std::endl;
-
-    } catch (const std::exception& e) {
+    } catch (const std::invalid_argument& e) {
+        std::cout << "EVVIVA!" << std::endl;
         std::cerr << e.what() << std::endl;
     }
 
@@ -42,7 +39,7 @@ int main()
         list_it = easyfind(lst, 500);
         std::cout << "Found: " << *list_it << std::endl;
 
-    } catch (const std::exception& e) {
+    } catch (const std::invalid_argument& e) {
         std::cerr << e.what() << std::endl;
     }
 
