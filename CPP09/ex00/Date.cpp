@@ -16,8 +16,6 @@ Date::Date()
 	if (!isValidDate()) {
 		throw InvalidDateException();
 	}
-
-	_dateValue = _year * 10000 + _month * 100 + _day;
 };
 
 /**
@@ -59,12 +57,37 @@ Date::~Date() {};
  */
 bool Date::operator<(const Date& other) const
 {
-    return this->_dateValue < other._dateValue;
+	if (this->_year != other._year) {
+		return this->_year < other._year;
+	}
+	if (this->_month != other._month) {
+		return this->_month < other._month;
+	}
+	return this->_day < other._day;
+}
+
+bool Date::operator>(const Date& other) const
+{
+	if (this->_year != other._year) {
+		return this->_year > other._year;
+	}
+	if (this->_month != other._month) {
+		return this->_month > other._month;
+	}
+	return this->_day > other._day;
+}
+
+bool Date::operator==(const Date& other) const
+{
+	return	this->_year == other._year &&
+			this->_month == other._month &&
+			this->_day == other._day;
 }
 
 
 /* Check if Date is Valid */
-bool Date::isValidDate() const {
+bool Date::isValidDate() const
+{
 	if (_year < 0 || _month < 1 || _month > 12 || _day < 1) {
 		return false;
 	}
@@ -88,7 +111,8 @@ bool Date::isValidDate() const {
 }
 
 /* Parse Date from String */
-void Date::parseDate(const std::string& date) {
+void Date::parseDate(const std::string& date)
+{
 	std::istringstream dateStream(date);
 	char delimiter;
 
@@ -107,7 +131,8 @@ int	Date::getMonth() const { return _month; }
 int	Date::getDay() const { return _day; }
 
 /* << operator overload */
-std::ostream& operator<<(std::ostream& os, const Date& date) {
+std::ostream& operator<<(std::ostream& os, const Date& date)
+{
 	os << date.getYear() << "-"
 	<< (date.getMonth() < 10 ? "0" : "") << date.getMonth() << "-"
 	<< (date.getDay() < 10 ? "0" : "") << date.getDay();
@@ -115,6 +140,7 @@ std::ostream& operator<<(std::ostream& os, const Date& date) {
 }
 
 /* Exception Description */
-const char* Date::InvalidDateException::what() const throw() {
+const char* Date::InvalidDateException::what() const throw()
+{
 	return "Date is invalid! Try inputting a valid date in format: YYYY-MM-DD";
 }

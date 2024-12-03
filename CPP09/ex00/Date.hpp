@@ -13,7 +13,9 @@ public:
 	Date& operator=( const Date& other );
 	~Date();
 
-	bool operator<( const Date& other ) const;
+	bool	operator<( const Date& other ) const;
+	bool	operator>( const Date& other ) const;
+	bool	operator==( const Date& other ) const;
 
 	bool    isValidDate( void ) const;
 
@@ -30,7 +32,6 @@ private:
 	int _year;
 	int _month;
 	int _day;
-	unsigned long	_dateValue;
 
 	void parseDate( const std::string& date);
 };

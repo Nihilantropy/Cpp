@@ -1,19 +1,28 @@
-#include "Date.hpp"
-#include "database.hpp"
 #include <iostream>
+#include <string>
+#include "err.hpp"
+#include "BitcoinExchange.hpp"
 
 int main(int argc, char **argv)
-{
-	std::map<Date, float> database;
-	
+{	
 	if (argc != 2)
-		printErrorAndExit("wrong number of arguments");
-	database = loadDatabase();
-	printDatabase(database);
+		printErrorAndExit("invalid number of arguments. Usage: ./btc <input_file>");
 
-	std::string	inputFile;
+    try {
+		(void)argv;
+        BitcoinExchange btc;
 
-	inputFile = argv[1];
-	std::cout << inputFile << std::endl;
+        // Load the database
+        btc.loadDatabase();
+
+		//btc.printDatabase();
+
+        // Process the input file
+        btc.printExchangeRate(argv[1]);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 	return 0;
 }
