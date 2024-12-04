@@ -9,13 +9,10 @@ int main(int argc, char **argv)
 		printErrorAndExit("invalid number of arguments. Usage: ./btc <input_file>");
 
     try {
-		(void)argv;
         BitcoinExchange btc;
 
         // Load the database
         btc.loadDatabase();
-
-		//btc.printDatabase();
 
         // Process the input file
         btc.printExchangeRate(argv[1]);

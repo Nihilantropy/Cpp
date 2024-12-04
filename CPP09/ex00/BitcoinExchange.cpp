@@ -1,4 +1,5 @@
 #include "BitcoinExchange.hpp"
+#include <iomanip>
 
 BitcoinExchange::BitcoinExchange() {}
 
@@ -140,6 +141,7 @@ void BitcoinExchange::printExchangeRate(const char* filename)
 			float result = value * exchangeRate;
 
 			// Print the result
+			std::cout << std::fixed << std::setprecision(1);
 			std::cout << dateStr << " => " << value << " = " << result << std::endl;
 		}
 		catch (const Date::InvalidDateException&)
