@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	pmergeMe.sortSequenceWithDeque();
+	pmergeMe.printRawSequence();
 
 	// std::cout << "Testing with std::deque:" << std::endl;
 	// pmergeMe.sortAndDisplaySequence("Deque");

@@ -9,7 +9,7 @@
 /* --- Canonical Form --- */
 
 /* Constructor */
-PmergeMe::PmergeMe() {}
+PmergeMe::PmergeMe() : _deque(0), _vector(0) {}
 
 /* Copy Constructor */
 PmergeMe::PmergeMe(const PmergeMe& other) : _deque(other._deque), _vector(other._vector) {}
@@ -292,4 +292,16 @@ double	PmergeMe::measureTime(void (PmergeMe::*sortMethod)()) const
 	clock_t end = clock();
 
 	return static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000;
+}
+
+/* utility */
+void	PmergeMe::printRawSequence()
+{
+	std::cout << "Deque raw sequence" << std::endl;
+	for (std::deque<int>::const_iterator it = _deque.begin(); it != _deque.end(); ++it)
+		std::cout << *it << " ";
+	std::cout << "\nVector raw sequence" << std::endl;
+	for (std::vector<int>::const_iterator it = _vector.begin(); it != _vector.end(); ++it)
+		std::cout << *it << " ";
+	std::cout << std::endl;
 }

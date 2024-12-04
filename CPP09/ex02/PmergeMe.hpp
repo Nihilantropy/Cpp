@@ -20,6 +20,9 @@ public:
 	void	sortSequenceWithVector();
 	void	sortAndDisplaySequence(const std::string& containerType) const;
 
+	/* utility */
+	void	printRawSequence();
+
 private:
 
 	std::deque<int>		_deque;
