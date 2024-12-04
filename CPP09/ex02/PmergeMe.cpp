@@ -5,14 +5,15 @@
 #include <climits>
 #include <stdexcept>
 #include <set>
+#include <iomanip>
 
 /* --- Canonical Form --- */
 
 /* Constructor */
-PmergeMe::PmergeMe() : _deque(0), _vector(0) {}
+PmergeMe::PmergeMe() : _deque(0), _vector(0), _oddSequence(false) {}
 
 /* Copy Constructor */
-PmergeMe::PmergeMe(const PmergeMe& other) : _deque(other._deque), _vector(other._vector) {}
+PmergeMe::PmergeMe(const PmergeMe& other) : _deque(other._deque), _vector(other._vector), _oddSequence(other._oddSequence) {}
 
 /* Assignment Operator */
 PmergeMe& PmergeMe::operator=(const PmergeMe& other)
@@ -21,6 +22,7 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
 	{
 		_deque = other._deque;
 		_vector = other._vector;
+		_oddSequence = other._oddSequence;
 	}
 	return *this;
 }
@@ -80,6 +82,9 @@ void	PmergeMe::sortSequenceWithDeque()
 	mergeKeysAndValues(keys, values);
 
 	_deque = keys;
+
+	if (_oddSequence)
+		_deque.pop_back();
 }
 
 /**
@@ -100,6 +105,9 @@ void	PmergeMe::sortSequenceWithVector()
 	mergeKeysAndValues(keys, values);
 
 	_vector = keys;
+
+	if (_oddSequence == true)
+		_vector.pop_back();
 }
 
 /**
@@ -114,33 +122,55 @@ void	PmergeMe::sortSequenceWithVector()
  */
 void	PmergeMe::pairAndSort(std::deque<std::pair<int, int> >& pairs, std::deque<int>& container)
 {
-	for (std::deque<int>::iterator it = container.begin(); it != container.end(); ++it)
+	for (std::deque<int>::iterator it = container.begin(); it != container.end();)
 	{
 		int first = *it;
 		++it;
-		int second = (it != container.end()) ? *it : INT_MAX;
+		int second;
+
+		if (it != container.end())
+			second = *it;
+		else
+		{
+			second = INT_MAX;
+			_oddSequence = true;
+		}
 
 		if (first > second)
 			pairs.push_back(std::make_pair(second, first));
 		else
 			pairs.push_back(std::make_pair(first, second));
+
+		if (it != container.end())
+			++it;
 	}
+
 	std::sort(pairs.begin(), pairs.end());
 }
 
 void PmergeMe::pairAndSort(std::vector<std::pair<int, int> >& pairs, std::vector<int>& container)
 {
-	for (std::vector<int>::iterator it = container.begin(); it != container.end(); ++it)
+	for (std::vector<int>::iterator it = container.begin(); it != container.end();)
 	{
 		int first = *it;
 		++it;
-		int second = (it != container.end()) ? *it : INT_MAX;
+		int second;
 
-		if (first > second) {
-			pairs.push_back(std::make_pair(second, first));
-		} else {
-			pairs.push_back(std::make_pair(first, second));
+		if (it != container.end())
+			second = *it;
+		else
+		{
+			second = INT_MAX;
+			_oddSequence = true;
 		}
+
+		if (first > second)
+			pairs.push_back(std::make_pair(second, first));
+		else
+			pairs.push_back(std::make_pair(first, second));
+
+		if (it != container.end())
+			++it;
 	}
 	std::sort(pairs.begin(), pairs.end());
 }
@@ -252,6 +282,7 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
 			std::cout << *it << " ";
 		std::cout << std::endl;
 
+		std::cout << std::fixed << std::setprecision(6);
 		std::cout << "Time to process a range of " << _deque.size() << " elements with std::deque: ";
 		std::cout << timeDeque << " us" << std::endl;
 	}
@@ -269,12 +300,13 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
 			std::cout << *it << " ";
 		std::cout << std::endl;
 
+		std::cout << std::fixed << std::setprecision(6);
 		std::cout << "Time to process a range of " << _vector.size() << " elements with std::vector: ";
 		std::cout << timeVector << " us" << std::endl;
 	}
 }
 
-
+#include <sys/time.h>
 /**
  * @brief Measures and displays the time taken to sort the container
  * 
@@ -284,14 +316,22 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
  */
 double	PmergeMe::measureTime(void (PmergeMe::*sortMethod)()) const
 {
-	clock_t start = clock();
+    struct timeval start, end;
+    
+    // Record the start time
+    gettimeofday(&start, NULL);
+    
+    // Execute the sorting method
+    (const_cast<PmergeMe*>(this)->*sortMethod)();
+    
+    // Record the end time
+    gettimeofday(&end, NULL);
 
-	// Sort using the member function that doesn't require parameters
-	(const_cast<PmergeMe*>(this)->*sortMethod)();
+    // Calculate elapsed time in microseconds
+    double elapsedTime = (end.tv_sec - start.tv_sec) * 1e6; // Convert seconds to microseconds
+    elapsedTime += (end.tv_usec - start.tv_usec); // Add microseconds
 
-	clock_t end = clock();
-
-	return static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000000;
+    return elapsedTime;
 }
 
 /* utility */

@@ -28,6 +28,8 @@ private:
 	std::deque<int>		_deque;
 	std::vector<int>	_vector;
 
+	bool	_oddSequence;
+
 	/* deque container */
 	void	pairAndSort(std::deque<std::pair<int, int> >& pairs, std::deque<int>& container);
 	void	extractKeysAndValues(const std::deque<std::pair<int, int> >& pairs, std::deque<int>& keys, std::deque<int>& values);

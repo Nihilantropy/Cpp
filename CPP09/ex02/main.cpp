@@ -47,13 +47,11 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	pmergeMe.printRawSequence();
+	std::cout << "Testing with std::deque:" << std::endl;
+	pmergeMe.sortAndDisplaySequence("Deque");
 
-	// std::cout << "Testing with std::deque:" << std::endl;
-	// pmergeMe.sortAndDisplaySequence("Deque");
-
-	// std::cout << "\nTesting with std::vector:" << std::endl;
-	// pmergeMe.sortAndDisplaySequence("Vector");
+	std::cout << "\nTesting with std::vector:" << std::endl;
+	pmergeMe.sortAndDisplaySequence("Vector");
 
 	return 0;
 }
