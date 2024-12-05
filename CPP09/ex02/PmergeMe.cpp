@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <set>
 #include <iomanip>
+#include <ctime>
 
 /* --- Canonical Form --- */
 
@@ -282,9 +283,9 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
 			std::cout << *it << " ";
 		std::cout << std::endl;
 
-		std::cout << std::fixed << std::setprecision(6);
+		std::cout << std::fixed << std::showpoint << std::setprecision(5);
 		std::cout << "Time to process a range of " << _deque.size() << " elements with std::deque: ";
-		std::cout << timeDeque << " us" << std::endl;
+		std::cout << timeDeque / 100 << " us" << std::endl;
 	}
 	else if (containerType == "Vector")
 	{
@@ -300,9 +301,9 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
 			std::cout << *it << " ";
 		std::cout << std::endl;
 
-		std::cout << std::fixed << std::setprecision(6);
+		std::cout << std::fixed << std::showpoint << std::setprecision(5);
 		std::cout << "Time to process a range of " << _vector.size() << " elements with std::vector: ";
-		std::cout << timeVector << " us" << std::endl;
+		std::cout << timeVector / 100 << " us" << std::endl;
 	}
 }
 
@@ -316,22 +317,15 @@ void PmergeMe::sortAndDisplaySequence(const std::string& containerType) const
  */
 double	PmergeMe::measureTime(void (PmergeMe::*sortMethod)()) const
 {
-    struct timeval start, end;
-    
-    // Record the start time
-    gettimeofday(&start, NULL);
-    
-    // Execute the sorting method
-    (const_cast<PmergeMe*>(this)->*sortMethod)();
-    
-    // Record the end time
-    gettimeofday(&end, NULL);
+	clock_t start, end;
 
-    // Calculate elapsed time in microseconds
-    double elapsedTime = (end.tv_sec - start.tv_sec) * 1e6; // Convert seconds to microseconds
-    elapsedTime += (end.tv_usec - start.tv_usec); // Add microseconds
+	start = clock();
+	
+	(const_cast<PmergeMe*>(this)->*sortMethod)();
+	
+	end = clock();
 
-    return elapsedTime;
+	return (double)(end - start) / CLOCKS_PER_SEC * 1000000;
 }
 
 /* utility */

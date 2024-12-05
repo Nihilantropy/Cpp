@@ -6,14 +6,12 @@
 
 int main(int argc, char* argv[])
 {
-	// If no arguments are passed (other than the program name), print an error and return
 	if (argc < 2)
 	{
 		std::cerr << "Error: No sequence provided!" << std::endl;
 		return 1;
 	}
 
-	// Create a PmergeMe instance
 	PmergeMe pmergeMe;
 
 	std::vector<int>	sequence;
