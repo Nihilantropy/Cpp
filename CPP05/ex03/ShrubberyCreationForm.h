@@ -3,7 +3,7 @@
 
 # include "AForm.h"
 
-class  ShrubberyCreationForm : public Form
+class  ShrubberyCreationForm : public AForm
 {
 public:
 	/* constructor with target */

@@ -9,10 +9,7 @@ Intern::Intern( const Intern& other ) { *this = other; }
 /***  assignment operator override ***/
 Intern& Intern::operator=( const Intern& other )
 {
-	if (this != &other)
-	{
-		// Assignment operator implementation
-	}
+	(void)other;
 	return *this;
 }
 
@@ -21,9 +18,9 @@ Intern::~Intern() {}
 
 /*** public methods ***/
 /* array of pointers to member functions */
-Form* Intern::makeForm(const std::string& name, const std::string& target)
+AForm* Intern::makeForm(const std::string& name, const std::string& target)
 {
-	for (size_t i = 0; i < sizeof(formMappings) / sizeof(formMappings[0]); ++i)
+	for (size_t i = 0; i < 3; ++i)
 	{
 		if (name == formMappings[i]._name)
 			return (this->*(formMappings[i]._creator))(target);
@@ -37,21 +34,21 @@ Form* Intern::makeForm(const std::string& name, const std::string& target)
 **	to pair the name of the form with
 **	the corrisponding 'createForm' function
 */
-const	Intern::FormMapping Intern::formMappings[] = {
+const	Intern::FormMapping Intern::formMappings[3] = {
 	{"robotomy request", &Intern::createRobotomyRequest},
 	{"shrubbery creation", &Intern::createShrubberyCreation},
 	{"presidential pardon", &Intern::createPresidentialPardon}
 };
 
-/* static function for form creation */
-Form*	Intern::createRobotomyRequest(const std::string& target) {
+/* function for form creation */
+AForm*	Intern::createRobotomyRequest(const std::string& target) const {
 		return new RobotomyRequestForm(target);
 }
 
-Form*	Intern::createShrubberyCreation(const std::string& target) {
+AForm*	Intern::createShrubberyCreation(const std::string& target) const {
 		return new ShrubberyCreationForm(target);
 }
 
-Form*	Intern::createPresidentialPardon(const std::string& target) {
+AForm*	Intern::createPresidentialPardon(const std::string& target) const {
 		return new PresidentialPardonForm(target);
 }

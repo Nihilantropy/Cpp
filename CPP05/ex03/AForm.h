@@ -6,23 +6,20 @@
 # include <stdexcept>
 # include <fstream>
 # include "Bureaucrat.h"
-# include "RobotomyRequestForm.h"
-# include "ShrubberyCreationForm.h"
-# include "PresidentialPardonForm.h"
 
 class Bureaucrat;
 
-class Form
+class AForm
 {
 public:
 	/*** constructor ***/
-	Form( const std::string& name, const int gradeToSign, const int grade_toExec );
+	AForm( const std::string& name, const int gradeToSign, const int gradeToExec );
 	/*** copy constructor ***/
-	Form( const Form& other );
+	AForm( const AForm& other );
 	/*** assignment operator ***/
-	Form& operator=( const Form& other );
+	AForm& operator=( const AForm& other );
 	/*** destructor ***/
-	virtual ~Form();
+	virtual ~AForm();
 
 	/*** getters ***/
 	const std::string&	getName() const;
@@ -78,6 +75,6 @@ private:
 	void				checkGrade( int grade ) const ;
 };
 
-std::ostream& operator<<( std::ostream& os, const Form& form );
+std::ostream& operator<<( std::ostream& os, const AForm& form );
 
 #endif

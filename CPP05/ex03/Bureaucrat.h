@@ -6,7 +6,7 @@
 # include <stdexcept>
 # include "AForm.h"
 
-class Form;
+class AForm;
 
 class Bureaucrat
 {
@@ -27,8 +27,8 @@ public:
 	/*** public methods ***/
 	void				incrementGrade();
 	void				decrementGrade();
-	void				signForm( Form& form ) const;
-	void				executeForm( const Form& form ) const;
+	void				signForm( AForm& form ) const;
+	void				executeForm( const AForm& form ) const;
 
 	/*** exception class with what() method override ***/
 	class GradeTooHighException : public std::exception

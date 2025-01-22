@@ -3,18 +3,18 @@
 
 /*** Constructor ***/
 RobotomyRequestForm::RobotomyRequestForm( const std::string& target )
-	: Form("RobotomyRequestForm", 72, 45), _target(target) {}
+	: AForm("RobotomyRequestForm", 72, 45), _target(target) {}
 
 /*** Copy constructor ***/
 RobotomyRequestForm::RobotomyRequestForm ( const RobotomyRequestForm& other )
-	: Form(other), _target(other._target) {}
+	: AForm(other), _target(other._target) {}
 
 /*** Assignment operator ***/
 RobotomyRequestForm& RobotomyRequestForm::operator=( const RobotomyRequestForm& other )
 {
 	if (this != &other)
 	{
-		Form::operator=(other);
+		AForm::operator=(other);
 		_target = other._target;
 	}
 	return *this;

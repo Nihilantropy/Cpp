@@ -2,6 +2,9 @@
 #define INTERN_H
 
 # include "AForm.h"
+# include "RobotomyRequestForm.h"
+# include "ShrubberyCreationForm.h"
+# include "PresidentialPardonForm.h"
 # include <utility>
 
 class Intern
@@ -17,7 +20,7 @@ public:
 	~Intern();
 
 	/*** public methods ***/
-	Form*	makeForm( const std::string& name, const std::string& target );
+	AForm*	makeForm( const std::string& name, const std::string& target );
 
 	class FormNameException : public std::exception
 	{
@@ -30,13 +33,13 @@ public:
 	};
 private:
 	/*** private methods ***/
-	/* static function for form creation */
-	static Form* createRobotomyRequest(const std::string& target);
-	static Form* createShrubberyCreation(const std::string& target);
-	static Form* createPresidentialPardon(const std::string& target);
+	/* function for form creation */
+	AForm* createRobotomyRequest(const std::string& target) const;
+	AForm* createShrubberyCreation(const std::string& target) const;
+	AForm* createPresidentialPardon(const std::string& target) const;
 
 	/* array of pointers to member functions */
-	typedef Form* (Intern::*FormCreator)(const std::string&) const;
+	typedef AForm* (Intern::*FormCreator)(const std::string&) const;
 	/* pairing the form name with the corrisponding 'createForm' function */
 	struct FormMapping
 	{
@@ -44,7 +47,7 @@ private:
 		FormCreator _creator;
 	};
 
-	static const FormMapping	formMappings[];
+	static const FormMapping	formMappings[3];
 };
 
 #endif

@@ -41,7 +41,7 @@ void	Bureaucrat::decrementGrade()
 **	try to sign the form based on the grade of the
 **	Bureaucrat and the required gradeToSign
 */
-void	Bureaucrat::signForm( Form& form ) const
+void	Bureaucrat::signForm( AForm& form ) const
 {
 	try
 	{
@@ -59,7 +59,7 @@ void	Bureaucrat::signForm( Form& form ) const
 **	try to execute the form based on the state of the form (must be signed)
 **	and grade of the Bureaucrat and the required gradeToExecute
 */
-void	Bureaucrat::executeForm( const Form& form ) const
+void	Bureaucrat::executeForm( const AForm& form ) const
 {
 	try
 	{

@@ -9,8 +9,10 @@ int main()
 	try
 	{
 		Intern someRandomIntern;
-		Form* rrf;
+		AForm* rrf;
 		rrf = someRandomIntern.makeForm("robotomy request", "Bender");
+
+		(void)rrf;
 	}
 	catch (std::exception& e)
 	{
