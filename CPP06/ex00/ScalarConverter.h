@@ -2,19 +2,21 @@
 #define SCALARCONVERTER_H
 
 #include <iostream>
+#include <string>
 #include <iomanip>
 #include <limits>
 #include <cstdlib>
 #include <cerrno>
+#include <cmath>
 
 class ScalarConverter
 {
 public:
-	/*** public methods ***/
-	static void	convert( const std::string& literal );
+	/*** static public method ***/
+	static void convert(const std::string& literal);
 
 private:
-	/*** private constructor ***/
+	/*** private constructor - static class ***/
 	ScalarConverter();
 	/*** copy constructor ***/
 	ScalarConverter( const ScalarConverter& other );
@@ -23,20 +25,37 @@ private:
 	/*** destructor ***/
 	~ScalarConverter();
 
-	/*** private methods ***/
-	/* check type */
-	static int	literalType( const std::string& literal );
-	static bool	isChar( const std::string& literal );
-	static bool	isInt( const std::string& literal );
-	static bool	isFloat( const std::string& literal );
-	static bool	isDouble( const std::string& literal );
+	/*** private enum for type identification ***/
+	enum Type
+	{
+		CHAR,
+		INT,
+		FLOAT,
+		DOUBLE,
+		INVALID
+	};
 
-	/* print type */
-	static void	printChar( double value, short flag );
-	static void	printInt( double value, short flag );
-	static void	printFloat( double value, short flag );
-	static void	printDouble( double value, short flag );
+	/*** private helper methods ***/
+	/* type detection and validation */
+	static Type detectType(const std::string& literal);
+	static std::string getInvalidTypeReason(const std::string& literal);
+	static bool isChar(const std::string& literal);
+	static bool isInt(const std::string& literal);
+	static bool isFloat(const std::string& literal);
+	static bool isDouble(const std::string& literal);
+	static bool isValidNumber(const std::string& str);
 
+	/* pseudo-literal handling */
+	static bool handlePseudoLiterals(const std::string& literal);
+	static void printPseudoLiteral(const std::string& literal);
+
+	/* conversion and printing */
+	static void convertLiteral(const std::string& literal);
+	static void printConversions(double value);
+	static void printChar(double value);
+	static void printInt(double value);
+	static void printFloat(double value);
+	static void printDouble(double value);
 };
 
 #endif
