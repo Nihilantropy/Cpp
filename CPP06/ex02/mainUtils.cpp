@@ -9,7 +9,7 @@ Base*	generate( void )
 	int	randomValue;
 
 	randomValue = ((rand() % 3));
-	std::cout << randomValue << std::endl;
+	std::cout << "Generated random value: " << randomValue << std::endl;
 	switch (randomValue)
 	{
 		case 0: return new A();
@@ -36,11 +36,11 @@ Base*	generate( void )
 void	identify( Base* p )
 {
 	if (dynamic_cast<A*>(p))
-		std::cout << "A" << std::endl;
+		std::cout << "Type identified: A" << std::endl;
 	else if (dynamic_cast<B*>(p))
-		std::cout << "B" << std::endl;
+		std::cout << "Type identified: B" << std::endl;
 	else if (dynamic_cast<C*>(p))
-		std::cout << "C" << std::endl;
+		std::cout << "Type identified: C" << std::endl;
 	else
 		std::cout << "Unkown type" << std::endl;
 }

@@ -3,5 +3,4 @@
 /*** destructor ***/
 Base::~Base() {}
 
-/*** functions ***/
 
