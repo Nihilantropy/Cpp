@@ -1,9 +1,9 @@
 #ifndef SHRUBERRY_CREATION_FORM_H
 #define SHRUBERRY_CREATION_FORM_H
 
-# include "Form.h"
+# include "AForm.h"
 
-class  ShrubberyCreationForm : public Form
+class  ShrubberyCreationForm : public AForm
 {
 public:
 	/* constructor with target */

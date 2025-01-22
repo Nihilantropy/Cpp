@@ -2,18 +2,18 @@
 
 /*** Constructor ***/
 PresidentialPardonForm::PresidentialPardonForm( const std::string& target )
-	: Form("PresidentialPardonForm", 25, 5), _target(target) {}
+	: AForm("PresidentialPardonForm", 25, 5), _target(target) {}
 
 /*** Copy constructor ***/
 PresidentialPardonForm::PresidentialPardonForm ( const PresidentialPardonForm& other )
-	: Form(other), _target(other._target) {}
+	: AForm(other), _target(other._target) {}
 
 /*** Assignment operator ***/
 PresidentialPardonForm& PresidentialPardonForm::operator=( const PresidentialPardonForm& other )
 {
 	if (this != &other)
 	{
-		Form::operator=(other);
+		AForm::operator=(other);
 		_target = other._target;
 	}
 	return *this;

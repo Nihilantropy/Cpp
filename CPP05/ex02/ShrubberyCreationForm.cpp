@@ -2,18 +2,18 @@
 
 /*** Constructor ***/
 ShrubberyCreationForm::ShrubberyCreationForm( const std::string& target )
-	: Form("ShrubberyCreationForm", 145, 137), _target(target) {}
+	: AForm("ShrubberyCreationForm", 145, 137), _target(target) {}
 
 /*** Copy constructor ***/
 ShrubberyCreationForm::ShrubberyCreationForm ( const ShrubberyCreationForm& other )
-	: Form(other), _target(other._target) {}
+	: AForm(other), _target(other._target) {}
 
 /*** Assignment operator ***/
 ShrubberyCreationForm& ShrubberyCreationForm::operator=( const ShrubberyCreationForm& other )
 {
 	if (this != &other)
 	{
-		Form::operator=(other);
+		AForm::operator=(other);
 		_target = other._target;
 	}
 	return *this;
