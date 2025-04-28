@@ -29,8 +29,8 @@ run_test() {
     
     # Print summarized output (first few lines if it's too long)
     echo -e "${BLUE}Output (summary):${NC}"
-    echo "$result" | head -n 5
-    if [ $(echo "$result" | wc -l) -gt 5 ]; then
+    echo "$result" | head -n 20
+    if [ $(echo "$result" | wc -l) -gt 20 ]; then
         echo "..."
     fi
     
