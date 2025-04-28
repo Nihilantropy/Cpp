@@ -1,25 +1,28 @@
 #include <iostream>
 #include <string>
-#include "err.hpp"
 #include "BitcoinExchange.hpp"
+#include "Err.hpp"
 
 int main(int argc, char **argv)
-{	
-	if (argc != 2)
-		printErrorAndExit("invalid number of arguments. Usage: ./btc <input_file>");
+{    
+    if (argc != 2) {
+        printErrorAndExit("invalid number of arguments. Usage: ./btc <input_file>");
+    }
 
     try {
         BitcoinExchange btc;
 
         // Load the database
-        btc.loadDatabase();
+        btc.loadDatabase("data.csv");
+
+        // btc.printDatabaseDates();
 
         // Process the input file
-        btc.printExchangeRate(argv[1]);
+        btc.processExchangeFile(argv[1]);
     }
     catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        printError(e.what());
         return 1;
     }
-	return 0;
+    return 0;
 }

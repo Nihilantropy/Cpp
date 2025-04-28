@@ -1,170 +1,286 @@
 #include "BitcoinExchange.hpp"
+#include "Utilities.hpp"
 #include <iomanip>
+#include <limits>
 
+/* Constructors/Destructors */
 BitcoinExchange::BitcoinExchange() {}
 
-BitcoinExchange::BitcoinExchange( const BitcoinExchange& other ) : _database(other._database) {}
+BitcoinExchange::BitcoinExchange(const BitcoinExchange& other) 
+    : _database(other._database) {}
 
-BitcoinExchange& BitcoinExchange::operator=( const BitcoinExchange& other )
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
 {
-	if (this != &other)
-		_database = other._database;
-	return *this;
+    if (this != &other)
+        _database = other._database;
+    return *this;
 }
 
-BitcoinExchange::~BitcoinExchange() {};
+BitcoinExchange::~BitcoinExchange() {}
 
-/* getter */
-std::map<Date, float>   BitcoinExchange::getDatabase( void ) const { return _database; };
+/* Getter */
+std::map<Date, float> BitcoinExchange::getDatabase() const { 
+    return _database; 
+}
 
 /**
- * load data.svc into the BitcoingExchange object
+ * Load data.csv into the BitcoinExchange object
  */
-void	BitcoinExchange::loadDatabase(void)
+void BitcoinExchange::loadDatabase(const std::string& filename)
 {
-	std::ifstream			file("data.csv");
-	std::string				line;
+    if (!fileExists(filename)) {
+        throw std::runtime_error("could not open database file: " + filename);
+    }
 
-	if (!file.is_open())
-		printErrorAndExit("could not open file");
-	
-	// Skip the header line
-	std::getline(file, line);
+    std::ifstream file(filename.c_str());
+    std::string line;
 
-	while (std::getline(file, line))
-	{
-		std::stringstream   ss(line);
-		std::string         dateStr;
-		std::string         valueStr;
+    // Skip the header line
+    if (!std::getline(file, line)) {
+        throw std::runtime_error("database file is empty");
+    }
 
-		std::getline(ss, dateStr, ',');
-		std::getline(ss, valueStr);
+    unsigned int lineCount = 1;
+    while (std::getline(file, line))
+    {
+        lineCount++;
+        line = trim(line);
+        if (line.empty()) continue;
 
-		Date date(dateStr);
-		float value = std::atof(valueStr.c_str());
+        std::istringstream ss(line);
+        std::string dateStr;
+        std::string valueStr;
 
-		_database.insert(std::make_pair(date, value));
-	}
-
-	file.close();
-}
-
-void	BitcoinExchange::printDatabase()
-{
-	for (std::map<Date, float>::const_iterator it = _database.begin(); it != _database.end(); ++it) {
-		std::cout << it->first << " => " << it->second << std::endl;
-	}
-}
-
-std::string trim(const std::string& str)
-{
-	size_t start = str.find_first_not_of(" \t\r\n");
-	size_t end = str.find_last_not_of(" \t\r\n");
-	if (start == std::string::npos || end == std::string::npos) {
-		return "";
-	}
-	return str.substr(start, end - start + 1);
-}
-
-bool isValidDate(const std::string& dateStr)
-{
-	if (dateStr.size() != 10) return false;  // Expected format is YYYY-MM-DD
-	
-	for (int i = 0; i < 10; ++i) {
-		if ((i == 4 || i == 7) && dateStr[i] != '-') return false;
-		if (i != 4 && i != 7 && !std::isdigit(dateStr[i])) return false;
-	}
-	return true;
-}
-
-void BitcoinExchange::printExchangeRate(const char* filename)
-{
-	std::ifstream file(filename);
-	std::string line;
-
-	if (!file.is_open())
-		printErrorAndExit("Error: could not open file.");
-
-	// Skip the header line
-	std::getline(file, line);
-
-	while (std::getline(file, line))
-	{
-		line = trim(line);
-
-		if (line.empty()) {
-            continue;  // Skip empty lines
+        // Parse the line in format "date,value"
+        if (!std::getline(ss, dateStr, ',') || !std::getline(ss, valueStr)) {
+            std::cerr << "Warning: Invalid format in database at line " 
+                     << lineCount << ": " << line << std::endl;
+            continue;
         }
-		std::stringstream ss(line);
-		std::string dateStr, valueStr;
 
-		if (std::getline(ss, dateStr, '|') && std::getline(ss, valueStr)) {
-            dateStr = trim(dateStr);
-            valueStr = trim(valueStr);
+        dateStr = trim(dateStr);
+        valueStr = trim(valueStr);
+
+        try {
+            // Parse date
+            Date date(dateStr);
             
-            // Additional checks for valid date and value
-            if (!isValidDate(dateStr)) {
-                std::cerr << "Error: bad input => " << dateStr << std::endl;
+            // Parse value
+            float value;
+            std::string errorMsg;
+            if (!stringToFloat(valueStr, value, errorMsg)) {
+                std::cerr << "Warning: Invalid value in database at line " 
+                         << lineCount << ": " << errorMsg << std::endl;
                 continue;
             }
-		}
 
-		try
-		{
-			// Parse the date
-			Date date(dateStr);
+            // Add to database
+            _database.insert(std::make_pair(date, value));
+        }
+        catch (const Date::InvalidDateException& e) {
+            std::cerr << "Warning: Invalid date in database at line " 
+                     << lineCount << ": " << e.what() << std::endl;
+        }
+    }
 
-			// Parse the value
-			float value = std::atof(valueStr.c_str());
-
-			if (isValidValue(value) == false) {
-				continue;
-			}
-
-			// Find the closest lower or equal date in the database
-			std::map<Date, float>::const_iterator it = _database.lower_bound(date);
-			if (it == _database.end() || it->first > date)
-			{
-				// If the lower_bound points to a date greater than input, go one step back
-				if (it != _database.begin())
-					--it;
-				else
-				{
-					// If there's no valid date, skip this line
-					std::cerr << "Error: no valid date found in database for input date." << std::endl;
-					continue;
-				}
-			}
-
-			// Multiply value by exchange rate
-			float exchangeRate = it->second;
-			float result = value * exchangeRate;
-
-			// Print the result
-			std::cout << std::fixed << std::setprecision(1);
-			std::cout << dateStr << " => " << value << " = " << result << std::endl;
-		}
-		catch (const Date::InvalidDateException&)
-		{
-			std::cerr << "Error: bad input => " << dateStr << std::endl;
-			continue;
-		}
-	}
-
-	file.close();
+    file.close();
+    
+    if (_database.empty()) {
+        throw std::runtime_error("No valid entries found in database");
+    }
 }
 
-bool	BitcoinExchange::isValidValue(float value)
+/**
+ * Print the entire database for debugging
+ */
+void BitcoinExchange::printDatabase() const
 {
-	if (value < 0) {
-		std::cerr << "Error: not a positive number " << std::endl;
-		return false;
+    for (std::map<Date, float>::const_iterator it = _database.begin(); 
+         it != _database.end(); ++it) {
+        std::cout << it->first << " => " << it->second << std::endl;
+    }
+}
+
+/**
+ * Process a file containing exchange rates to calculate
+ */
+void BitcoinExchange::processExchangeFile(const std::string& filename)
+{
+    if (!fileExists(filename)) {
+        throw std::runtime_error("could not open file: " + filename);
+    }
+
+    std::ifstream file(filename.c_str());
+    std::string line;
+
+    // Skip the header line
+    if (!std::getline(file, line)) {
+        throw std::runtime_error("input file is empty");
+    }
+
+    unsigned int lineNum = 1;
+    while (std::getline(file, line))
+    {
+        lineNum++;
+        processInputLine(line, lineNum);
+    }
+
+    file.close();
+}
+
+/**
+ * Process a single line from the input file
+ */
+void BitcoinExchange::processInputLine(const std::string& line, unsigned int lineNum)
+{
+    std::string trimmedLine = trim(line);
+    if (trimmedLine.empty()) {
+        return; // Skip empty lines
+    }
+
+    std::string dateStr;
+    float value;
+    std::string errorMsg;
+
+    // Parse line in "date | value" format
+    if (!parseInputLine(trimmedLine, dateStr, value, errorMsg)) {
+        std::cerr << "Error: " << errorMsg << " at line " << lineNum << std::endl;
+        return;
+    }
+
+    // Check if value is valid
+	if (!isValidValue(value, errorMsg)) {
+		// Make sure errorMsg is not empty
+		if (errorMsg.empty()) {
+			errorMsg = "invalid value"; // Default message if empty
+		}
+		std::cerr << "Error: " << errorMsg << " at line " << lineNum << std::endl;
+		return;
 	}
 
-	if (value > 1000) {
-		std::cerr << "Error: value too large a number " << std::endl;
-		return false;
-	}
+    try {
+        // Parse the date
+        Date date(dateStr);
+        
+        // Get exchange rate
+        float exchangeRate;
+        if (!(getExchangeRate(date, errorMsg) > 0)) {
+            std::cerr << "Error: " << errorMsg << " at line " << lineNum << std::endl;
+            return;
+        }
+        exchangeRate = getExchangeRate(date, errorMsg);
+
+        // Calculate and display result
+        float result = value * exchangeRate;
+        
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << dateStr << " => " << value << " = " << result << std::endl;
+    }
+    catch (const Date::InvalidDateException& e) {
+        std::cerr << "Error: bad input => " << dateStr 
+                 << " at line " << lineNum << std::endl;
+    }
+}
+
+/**
+ * Parse a line in format "date | value"
+ */
+bool BitcoinExchange::parseInputLine(const std::string& line, std::string& dateStr, 
+                                    float& value, std::string& errorMsg) const
+{
+    std::istringstream ss(line);
+    std::string valueStr;
+
+    // Split by pipe character
+    if (!std::getline(ss, dateStr, '|') || !std::getline(ss, valueStr)) {
+        errorMsg = "bad input => " + line;
+        return false;
+    }
+
+    dateStr = trim(dateStr);
+    valueStr = trim(valueStr);
+
+    // Check date format
+    if (!isValidDateFormat(dateStr, errorMsg)) {
+        errorMsg = "bad input => " + dateStr;
+        return false;
+    }
+
+    // Parse value
+    if (!stringToFloat(valueStr, value, errorMsg)) {
+        errorMsg = "invalid value: " + errorMsg;
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Check if a value is valid according to requirements
+ */
+bool BitcoinExchange::isValidValue(float value, std::string& errorMsg) const
+{
+    if (value < 0) {
+        errorMsg = "not a positive number";
+        return false;
+    }
+
+    if (value > 1000) {
+        errorMsg = "value too large a number";
+        return false;
+    }
+
+    if (value == 0) {
+        errorMsg = "value must be greater than zero";
+        return false;
+    }
+    
+    return true;
+}
+
+/**
+ * Get the exchange rate for a specific date
+ */
+float BitcoinExchange::getExchangeRate(const Date& date, std::string& errorMsg) const
+{
+    if (_database.empty()) {
+        errorMsg = "database is empty";
+        return -1;
+    }
 	
-	return true;
+    // Find the closest lower or equal date in the database
+    std::map<Date, float>::const_iterator it = _database.lower_bound(date);
+    
+    // If exact match
+    if (it != _database.end() && !(date < it->first)) {
+        return it->second;
+    }
+    
+    // If the lower_bound points to a date greater than input, go one step back
+    if (it == _database.end() || date < it->first)
+    {
+        if (it != _database.begin()) {
+            --it;
+            return it->second;
+        }
+        else {
+            // Date is earlier than any in the database
+            errorMsg = "no valid date found in database for input date";
+            return -1;
+        }
+    }
+    
+    // Should never reach here
+    errorMsg = "unexpected error finding exchange rate";
+    return -1;
+}
+
+void BitcoinExchange::printDatabaseDates() const {
+    std::cout << "Database contains " << _database.size() << " entries:" << std::endl;
+    int count = 0;
+    for (std::map<Date, float>::const_iterator it = _database.begin(); it != _database.end(); ++it) {
+        std::cout << it->first << ", ";
+        if (++count % 5 == 0) std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }

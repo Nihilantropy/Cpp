@@ -2,9 +2,8 @@
 #define ERR_HPP
 
 #include <string>
-#include <cstdlib>
-#include <iostream>
 
+void printError(const std::string& message);
 void printErrorAndExit(const std::string& message);
 
 #endif
