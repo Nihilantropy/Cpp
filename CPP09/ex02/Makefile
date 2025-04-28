@@ -7,7 +7,7 @@ INC_DIR = ./
 OBJ_DIR = obj
 
 # Find all .cpp files in the srcs directory
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+SRCS = main.cpp PmergeMe.cpp
 
 # Create a list of corresponding .o files in the obj directory
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
