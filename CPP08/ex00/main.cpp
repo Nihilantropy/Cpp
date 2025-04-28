@@ -18,7 +18,6 @@ int main()
         std::cout << "Found: " << *vec_it << std::endl;
 
     } catch (const std::invalid_argument& e) {
-        std::cout << "EVVIVA!" << std::endl;
         std::cerr << e.what() << std::endl;
     }
 
@@ -30,6 +29,7 @@ int main()
         lst.push_back(100);
         lst.push_back(200);
         lst.push_back(300);
+        // lst.push_back(500);
 
         // Test with element that exists
         std::list<int>::iterator list_it = easyfind(lst, 200);
