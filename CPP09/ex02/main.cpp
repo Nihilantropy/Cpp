@@ -3,6 +3,9 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
+#include <string>
+#include <limits.h>
 
 int main(int argc, char* argv[])
 {
@@ -13,26 +16,61 @@ int main(int argc, char* argv[])
 	}
 
 	PmergeMe pmergeMe;
-
-	std::vector<int>	sequence;
+	std::vector<int> sequence;
 
 	for (int i = 1; i < argc; ++i)
 	{
-		try
+		std::string arg(argv[i]);
+		std::istringstream iss(arg);
+		std::string token;
+		
+		// If the argument contains spaces, split it and parse each token
+		if (arg.find(' ') != std::string::npos)
 		{
-			int num = std::atoi(argv[i]);
-			if (num <= 0)
+			while (iss >> token)
 			{
-				std::cerr << "Error: Only positive integers are allowed!" << std::endl;
+				// Convert the token to an integer
+				char* endptr;
+				long num = std::strtol(token.c_str(), &endptr, 10);
+				
+				// Check if conversion was successful and the number is positive
+				if (*endptr != '\0' || num <= 0)
+				{
+					std::cerr << "Error: Only positive integers are allowed! Invalid input: " << token << std::endl;
+					return 1;
+				}
+				else if (num > INT_MAX) {
+					std::cerr << "Error: value exceed MAX INT valeue" << std::endl;
+					return 1;
+				}
+				sequence.push_back(static_cast<int>(num));
+			}
+		}
+		else // Regular single number argument
+		{
+			// Convert the argument to an integer
+			char* endptr;
+			long num = std::strtol(arg.c_str(), &endptr, 10);
+			
+			// Check if conversion was successful and the number is positive
+			if (*endptr != '\0' || num <= 0)
+			{
+				std::cerr << "Error: Only positive integers are allowed! Invalid input: " << arg << std::endl;
 				return 1;
 			}
-			sequence.push_back(num);
+			else if (num > INT_MAX) {
+				std::cerr << "Error: value exceed MAX INT valeue" << std::endl;
+				return 1;
+			}
+			sequence.push_back(static_cast<int>(num));
 		}
-		catch (...)
-		{
-			std::cerr << "Error: Invalid input!" << std::endl;
-			return 1;
-		}
+	}
+
+	// Check if we got any numbers after parsing
+	if (sequence.empty())
+	{
+		std::cerr << "Error: No valid numbers provided" << std::endl;
+		return 1;
 	}
 
 	try
